@@ -184,4 +184,41 @@ class AuthLogIdentityBehaviorTest extends TestCase
         $this->assertFalse($model->hasFailedLoginSequence(4));
         $this->assertFalse($model->hasFailedLoginSequence(5));
     }
+
+    /**
+     * @depends testWriteAuthLog
+     */
+    public function testGc()
+    {
+        /* @var $model1 User|AuthLogIdentityBehavior */
+        $model1 = new User();
+        $model1->username = 'username1';
+        $model1->password = 'password1';
+        $model1->authKey = 'authKey1';
+        $model1->save(false);
+        $model1->gcProbability = 0;
+
+        /* @var $model2 User|AuthLogIdentityBehavior */
+        $model2 = new User();
+        $model2->username = 'username2';
+        $model2->password = 'password2';
+        $model2->authKey = 'authKey2';
+        $model2->save(false);
+        $model1->gcProbability = 0;
+
+        $model1->writeAuthLog(['date' => 10]);
+        $model2->writeAuthLog(['date' => 15]);
+        $model1->writeAuthLog(['date' => 20]);
+        $model2->writeAuthLog(['date' => 25]);
+        $model1->writeAuthLog(['date' => 30]);
+        $model2->writeAuthLog(['date' => 35]);
+        $model1->writeAuthLog(['date' => 40]);
+        $model2->writeAuthLog(['date' => 45]);
+
+        $model1->gcLimit = 2;
+        $model1->gcAuthLogs(true);
+
+        $this->assertEquals(2, $model1->getAuthLogs()->count(), 'Unable to collect garbage');
+        $this->assertEquals(4, $model2->getAuthLogs()->count(), 'Extra model affected by garbage collection');
+    }
 }

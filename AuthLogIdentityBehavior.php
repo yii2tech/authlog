@@ -48,6 +48,16 @@ class AuthLogIdentityBehavior extends Behavior
      * signature: `array function (BaseActiveRecord $model) {}`
      */
     public $defaultAuthLogData;
+    /**
+     * @var integer the probability (parts per million) that garbage collection (GC) should be performed
+     * when writing auth log. Defaults to 1000, meaning 1% chance.
+     * This number should be between 0 and 1000000. A value 0 means no GC will be performed at all.
+     */
+    public $gcProbability = 1000;
+    /**
+     * @var integer number of the last auth logs, which should be kept after garbage collection (GC) performed.
+     */
+    public $gcLimit = 100;
 
     /**
      * @var BaseActiveRecord|null
@@ -236,5 +246,41 @@ class AuthLogIdentityBehavior extends Behavior
         }
 
         return true;
+    }
+
+    // Garbage collection
+
+    /**
+     * Removes auth logs, which overflow [[gcLimit]].
+     * @param boolean $force whether to enforce the garbage collection regardless of [[gcProbability]].
+     * Defaults to false, meaning the actual deletion happens with the probability as specified by [[gcProbability]].
+     */
+    public function gcAuthLogs($force = false)
+    {
+        if ($force || mt_rand(0, 1000000) < $this->gcProbability) {
+            $relation = $this->getAuthLogRelation();
+            $borderRecord = $relation
+                ->orderBy([$this->dateAttribute => SORT_DESC])
+                ->offset($this->gcLimit)
+                ->limit(1)
+                ->one();
+            if ($borderRecord === null) {
+                return;
+            }
+
+            /* @var $modelClass BaseActiveRecord */
+            $modelClass = $relation->modelClass;
+            list($ownerReferenceAttribute) = array_keys($relation->link);
+
+            $modelClass::deleteAll([
+                'and',
+                [
+                    $ownerReferenceAttribute => $this->owner->getPrimaryKey()
+                ],
+                [
+                    '<=', $this->dateAttribute, $borderRecord->{$this->dateAttribute}
+                ],
+            ]);
+        }
     }
 }
