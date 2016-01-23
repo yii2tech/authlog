@@ -97,8 +97,9 @@ class AuthLogLoginFormBehavior extends Behavior
     public $verifyIdentityAttributeErrors = [];
     /**
      * @var string name of the owner attribute, which should be used for CAPTCHA verification code entry.
+     * If not set, no robot verification will be ever performed.
      */
-    public $verifyRobotAttribute = 'verifyCode';
+    public $verifyRobotAttribute;
     /**
      * @var array validation rule, which should be used for robot verification.
      * Note: in addition to this, owner model should provide a validation rule, which makes [[verifyRobotAttribute]] 'safe'!
@@ -191,7 +192,7 @@ class AuthLogLoginFormBehavior extends Behavior
      */
     protected function findIsRobotCheckRequired()
     {
-        if ($this->verifyRobotFailedLoginSequence === false) {
+        if ($this->verifyRobotFailedLoginSequence === false || $this->verifyRobotAttribute === null) {
             return false;
         }
         $identity = $this->getIdentity();

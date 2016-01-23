@@ -18,6 +18,7 @@ use yii\db\BaseActiveRecord;
  * ```php
  * $this->createTable('UserAuthLog', [
  *     'id' => $this->primaryKey(),
+ *     'userId' => $this->integer(),
  *     'date' => $this->integer(),
  *     'cookieBased' => $this->boolean(),
  *     'duration' => $this->integer(),

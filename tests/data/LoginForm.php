@@ -19,6 +19,7 @@ class LoginForm extends Model
         return [
             'authLog' => [
                 'class' => AuthLogLoginFormBehavior::className(),
+                'verifyRobotAttribute' => 'verifyCode',
                 'verifyRobotRule' => ['required'],
                 'verifyRobotFailedLoginSequence' => 2,
                 'deactivateFailedLoginSequence' => 3,
