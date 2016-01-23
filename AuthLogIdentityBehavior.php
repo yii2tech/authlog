@@ -11,7 +11,50 @@ use yii\base\Behavior;
 use yii\db\BaseActiveRecord;
 
 /**
- * AuthLogIdentityBehavior
+ * AuthLogIdentityBehavior is a behavior for the [[BaseActiveRecord]] model, which implements [[\yii\web\IdentityInterface]] interface.
+ * This behavior allows logging of the authentication attempts made via owner identity. It works through the relation
+ * to the log entity specified via [[authLogRelation]]. The database migration for such entity creation can be following:
+ *
+ * ```php
+ * $this->createTable('UserAuthLog', [
+ *     'id' => $this->primaryKey(),
+ *     'date' => $this->integer(),
+ *     'cookieBased' => $this->boolean(),
+ *     'duration' => $this->integer(),
+ *     'error' => $this->string(),
+ *     'ip' => $this->string(),
+ *     'host' => $this->string(),
+ *     'url' => $this->string(),
+ *     'userAgent' => $this->string(),
+ * ]);
+ * ```
+ *
+ * Configuration example:
+ *
+ * ```php
+ * class User extends ActiveRecord implements IdentityInterface
+ * {
+ *     public function behaviors()
+ *     {
+ *         return [
+ *             'authLog' => [
+ *                 'class' => AuthLogIdentityBehavior::className(),
+ *                 'authLogRelation' => 'authLogs',
+ *                 'defaultAuthLogData' => function ($model) {
+ *                     return [
+ *                         'ip' => $_SERVER['REMOTE_ADDR'],
+ *                         'host' => @gethostbyaddr($_SERVER['REMOTE_ADDR']),
+ *                         'url' => $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+ *                         'userAgent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null,
+ *                     ];
+ *                 },
+ *             ],
+ *         ];
+ *     }
+ *
+ *     // ...
+ * }
+ * ```
  *
  * @property BaseActiveRecord|\yii\web\IdentityInterface $owner
  *
@@ -50,10 +93,10 @@ class AuthLogIdentityBehavior extends Behavior
     public $defaultAuthLogData;
     /**
      * @var integer the probability (parts per million) that garbage collection (GC) should be performed
-     * when writing auth log. Defaults to 1000, meaning 1% chance.
+     * when writing auth log. Defaults to 10000, meaning 1% chance.
      * This number should be between 0 and 1000000. A value 0 means no GC will be performed at all.
      */
-    public $gcProbability = 1000;
+    public $gcProbability = 10000;
     /**
      * @var integer number of the last auth logs, which should be kept after garbage collection (GC) performed.
      */

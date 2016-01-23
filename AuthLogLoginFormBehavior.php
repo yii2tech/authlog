@@ -15,7 +15,36 @@ use yii\validators\Validator;
 use yii\web\IdentityInterface;
 
 /**
- * AuthLogLoginFormBehavior
+ * AuthLogLoginFormBehavior is a behavior for the login form model, which allows "brute-force" attack protection.
+ * This behavior requires [[AuthLogIdentityBehavior]] being attached to the related identity class as well as
+ * [[AuthLogWebUserBehavior]] behavior being attached to the application 'user' component.
+ *
+ * 2 level of protection are provided:
+ *  - require robot verification (CAPTCHA) after [[verifyRobotFailedLoginSequence]] sequence login failures
+ *  - deactivation of the identity record after [[deactivateFailedLoginSequence]] sequence login failures
+ *
+ * Example:
+ *
+ * ```php
+ * class LoginForm extends Model
+ * {
+ *     public $username;
+ *     public $password;
+ *     public $rememberMe = true;
+ *     public $verifyCode;
+ *
+ *     public function behaviors()
+ *     {
+ *         return [
+ *             'authLog' => [
+ *                 'class' => AuthLogLoginFormBehavior::className(),
+ *                 'deactivateIdentity' => 'suspend'
+ *             ],
+ *         ];
+ *     }
+ *     // ...
+ * }
+ * ```
  *
  * @property Model $owner
  * @property IdentityInterface|AuthLogIdentityBehavior|null $identity related identity model.
@@ -45,8 +74,10 @@ class AuthLogLoginFormBehavior extends Behavior
      * ```php
      * function(IdentityInterface $identity) {...}
      * ```
+     *
+     * If not set no deactivation will be ever performed.
      */
-    public $deactivateIdentity = 'deactivate';
+    public $deactivateIdentity;
     /**
      * @var array list of the owner attributes, which are used to validate identity authentication.
      */
@@ -70,6 +101,7 @@ class AuthLogLoginFormBehavior extends Behavior
     public $verifyRobotAttribute = 'verifyCode';
     /**
      * @var array validation rule, which should be used for robot verification.
+     * Note: in addition to this, owner model should provide a validation rule, which makes [[verifyRobotAttribute]] 'safe'!
      */
     public $verifyRobotRule = ['captcha'];
     /**
@@ -210,7 +242,9 @@ class AuthLogLoginFormBehavior extends Behavior
             return false;
         }
 
-        if (is_string($this->deactivateIdentity)) {
+        if ($this->deactivateIdentity === null) {
+            return false;
+        } elseif (is_string($this->deactivateIdentity)) {
             return call_user_func([$identity, $this->deactivateIdentity]);
         } else {
             return call_user_func($this->deactivateIdentity, $identity);
@@ -247,19 +281,23 @@ class AuthLogLoginFormBehavior extends Behavior
      */
     public function afterValidate($event)
     {
+        $identity = $this->getIdentity();
+        if (!is_object($identity)) {
+            return;
+        }
+
         foreach ($this->verifyIdentityAttributes as $attribute) {
             if ($this->owner->hasErrors($attribute) && !empty($this->owner->{$attribute})) {
-                $identity = $this->getIdentity();
-                if (is_object($identity)) {
-                    $errorToken = isset($this->verifyIdentityAttributeErrors[$attribute]) ? $this->verifyIdentityAttributeErrors[$attribute] : $attribute;
-                    $this->logAuthError($errorToken);
+                $errorToken = isset($this->verifyIdentityAttributeErrors[$attribute]) ? $this->verifyIdentityAttributeErrors[$attribute] : $attribute;
+                $this->logAuthError($errorToken);
 
-                    if ($this->deactivateFailedLoginSequence !== false) {
-                        if ($identity->hasFailedLoginSequence($this->deactivateFailedLoginSequence)) {
-                            $this->deactivateIdentity();
-                        }
+                if ($this->deactivateFailedLoginSequence !== false && $this->deactivateIdentity !== null) {
+                    if ($identity->hasFailedLoginSequence($this->deactivateFailedLoginSequence)) {
+                        $this->deactivateIdentity();
                     }
                 }
+
+                break;
             }
         }
     }

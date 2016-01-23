@@ -140,6 +140,7 @@ class AuthLogLoginFormBehaviorTest extends TestCase
         $loginForm = new LoginForm();
         $loginForm->username = $user->username;
         $loginForm->password = 'wrong password';
+        $loginForm->deactivateIdentity = 'deactivate';
 
         $loginForm->validate();
         $loginForm->validate();

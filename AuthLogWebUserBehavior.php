@@ -11,9 +11,27 @@ use yii\base\Behavior;
 use yii\web\User;
 
 /**
- * AuthLogWebUserBehavior
+ * AuthLogWebUserBehavior is a behavior for [[\yii\web\User]], which triggers [[AuthLogIdentityBehavior::logAuth()]]
+ * after user login.
+ *
+ * Application configuration example:
+ *
+ * ```php
+ * return [
+ *     'components' => [
+ *         'user' => [
+ *             'as authLog' => [
+ *                 'class' => 'yii2tech\authlog\AuthLogWebUserBehavior'
+ *             ],
+ *         ],
+ *         // ...
+ *     ],
+ *     // ...
+ * ];
+ * ```
  *
  * @see AuthLogIdentityBehavior
+ * @see \yii\web\User
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
@@ -37,7 +55,7 @@ class AuthLogWebUserBehavior extends Behavior
     public function afterLogin($event)
     {
         /* @var $identity \yii\web\IdentityInterface|AuthLogIdentityBehavior */
-        $identity =  $event->identity;
+        $identity = $event->identity;
         $identity->logAuth([
             'cookieBased' => $event->cookieBased,
             'duration' => $event->duration,
