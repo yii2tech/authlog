@@ -95,4 +95,23 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->getAuthKey() === $authKey;
     }
+
+    /**
+     * Finds user by login name (username or email)
+     *
+     * @param string $loginName
+     * @return static|null
+     */
+    public static function findByLoginName($loginName)
+    {
+        return static::find()->where(['username' => $loginName])->one();
+    }
+
+    /**
+     * Emulates record deactivation for the test purposes
+     */
+    public function deactivate()
+    {
+        return $this->updateAttributes(['authKey' => 'inactive']);
+    }
 }

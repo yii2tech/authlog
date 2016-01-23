@@ -40,6 +40,10 @@ class TestCase extends \PHPUnit_Framework_TestCase
                 'request' => [
                     'class' => __NAMESPACE__ . '\data\Request'
                 ],
+                'user' => [
+                    'class' => 'yii\web\User',
+                    'identityClass' => __NAMESPACE__ . '\data\User',
+                ],
                 'db' => [
                     'class' => 'yii\db\Connection',
                     'dsn' => 'sqlite::memory:',
