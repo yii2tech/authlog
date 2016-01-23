@@ -20,7 +20,7 @@
         "yiisoft/yii2": "*"
     },
     "autoload": {
-        "psr-4": { "yii2tech\\ar\\file\\": "" }
+        "psr-4": { "yii2tech\\authlog\\": "" }
     },
     "extra": {
         "branch-alias": {
