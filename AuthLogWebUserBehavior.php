@@ -38,7 +38,7 @@ class AuthLogWebUserBehavior extends Behavior
     {
         /* @var $identity \yii\web\IdentityInterface|AuthLogIdentityBehavior */
         $identity =  $event->identity;
-        $identity->writeAuthLog([
+        $identity->logAuth([
             'cookieBased' => $event->cookieBased,
             'duration' => $event->duration,
         ]);

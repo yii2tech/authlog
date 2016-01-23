@@ -195,7 +195,7 @@ class AuthLogLoginFormBehavior extends Behavior
     {
         $identity = $this->getIdentity();
         if ($identity !== null) {
-            $identity->writeAuthLogError($error, $data);
+            $identity->logAuthError($error, $data);
         }
     }
 

@@ -7,14 +7,14 @@ use yii2tech\tests\unit\authlog\data\User;
 
 class AuthLogIdentityBehaviorTest extends TestCase
 {
-    public function testWriteAuthLog()
+    public function testLogAuth()
     {
         /* @var $model User|AuthLogIdentityBehavior */
         $model = User::find()->one();
 
         $now = time();
 
-        $this->assertTrue($model->writeAuthLog(), 'Unable to write auth log');
+        $this->assertTrue($model->logAuth(), 'Unable to write auth log');
 
         $authLog = $model->getAuthLogs()->one();
         $this->assertNotEmpty($authLog, 'No auth log record saved');
@@ -23,37 +23,37 @@ class AuthLogIdentityBehaviorTest extends TestCase
     }
 
     /**
-     * @depends testWriteAuthLog
+     * @depends testLogAuth
      */
-    public function testWriteAuthLogOverride()
+    public function testLogAuthOverride()
     {
         /* @var $model User|AuthLogIdentityBehavior */
         $model = User::find()->one();
 
         $error = 71;
-        $model->writeAuthLog(['error' => $error]);
+        $model->logAuth(['error' => $error]);
 
         $authLog = $model->getAuthLogs()->one();
         $this->assertEquals($error, $authLog->error, 'Unable to override error');
     }
 
     /**
-     * @depends testWriteAuthLogOverride
+     * @depends testLogAuthOverride
      */
-    public function testWriteAuthLogError()
+    public function testLogAuthError()
     {
         /* @var $model User|AuthLogIdentityBehavior */
         $model = User::find()->one();
 
         $error = 71;
-        $model->writeAuthLogError($error);
+        $model->logAuthError($error);
 
         $authLog = $model->getAuthLogs()->one();
         $this->assertEquals($error, $authLog->error, 'Unable to write error');
     }
 
     /**
-     * @depends testWriteAuthLog
+     * @depends testLogAuth
      */
     public function testCustomDateValue()
     {
@@ -61,7 +61,7 @@ class AuthLogIdentityBehaviorTest extends TestCase
         $model = User::find()->one();
 
         $model->dateDefaultValue = 18;
-        $model->writeAuthLog();
+        $model->logAuth();
 
         $authLog = $model->getAuthLogs()->one();
         $this->assertEquals($model->dateDefaultValue, $authLog->date, 'Incorrect date value');
@@ -71,14 +71,14 @@ class AuthLogIdentityBehaviorTest extends TestCase
         $model->dateDefaultValue = function() use ($dateDefaultValue) {
             return $dateDefaultValue;
         };
-        $model->writeAuthLog();
+        $model->logAuth();
 
         $authLog = $model->getAuthLogs()->orderBy(['id' => SORT_DESC])->limit(1)->one();
         $this->assertEquals($dateDefaultValue, $authLog->date, 'Incorrect date value by callback');
     }
 
     /**
-     * @depends testWriteAuthLog
+     * @depends testLogAuth
      */
     public function testCustomErrorValue()
     {
@@ -87,14 +87,14 @@ class AuthLogIdentityBehaviorTest extends TestCase
 
         $model->errorDefaultValue = 56;
 
-        $model->writeAuthLog();
+        $model->logAuth();
 
         $authLog = $model->getAuthLogs()->one();
         $this->assertEquals($model->errorDefaultValue, $authLog->error, 'Incorrect error value');
     }
 
     /**
-     * @depends testWriteAuthLog
+     * @depends testLogAuth
      */
     public function testCustomData()
     {
@@ -105,7 +105,7 @@ class AuthLogIdentityBehaviorTest extends TestCase
             'ip' => '10.10.10.10',
             'url' => 'http://test.url',
         ];
-        $model->writeAuthLog();
+        $model->logAuth();
         $authLog = $model->getAuthLogs()->one();
 
         $this->assertEquals($model->defaultAuthLogData['ip'], $authLog->ip, 'Incorrect "ip" value');
@@ -128,7 +128,7 @@ class AuthLogIdentityBehaviorTest extends TestCase
                 'url' => $url,
             ];
         };
-        $model->writeAuthLog();
+        $model->logAuth();
         $authLog = $model->getAuthLogs()->one();
 
         $this->assertEquals($ip, $authLog->ip, 'Incorrect "ip" value');
@@ -136,48 +136,48 @@ class AuthLogIdentityBehaviorTest extends TestCase
     }
 
     /**
-     * @depends testWriteAuthLogOverride
+     * @depends testLogAuthOverride
      */
     public function testGetLastLoginDate()
     {
         /* @var $model User|AuthLogIdentityBehavior */
         $model = User::find()->one();
 
-        $model->writeAuthLog(['date' => 10]);
-        $model->writeAuthLog(['date' => 20]);
-        $model->writeAuthLogError(5, ['date' => 30]);
+        $model->logAuth(['date' => 10]);
+        $model->logAuth(['date' => 20]);
+        $model->logAuthError(5, ['date' => 30]);
 
         $this->assertEquals(20, $model->getLastLoginDate());
     }
 
     /**
-     * @depends testWriteAuthLogError
+     * @depends testLogAuthError
      */
     public function testGetPreLastLoginDate()
     {
         /* @var $model User|AuthLogIdentityBehavior */
         $model = User::find()->one();
 
-        $model->writeAuthLog(['date' => 10]);
-        $model->writeAuthLog(['date' => 20]);
-        $model->writeAuthLog(['date' => 30]);
-        $model->writeAuthLogError(5, ['date' => 40]);
+        $model->logAuth(['date' => 10]);
+        $model->logAuth(['date' => 20]);
+        $model->logAuth(['date' => 30]);
+        $model->logAuthError(5, ['date' => 40]);
 
         $this->assertEquals(20, $model->getPreLastLoginDate());
     }
 
     /**
-     * @depends testWriteAuthLogError
+     * @depends testLogAuthError
      */
     public function testHasFailedLoginSequence()
     {
         /* @var $model User|AuthLogIdentityBehavior */
         $model = User::find()->one();
 
-        $model->writeAuthLog(['date' => 10]);
-        $model->writeAuthLogError(5, ['date' => 20]);
-        $model->writeAuthLogError(5, ['date' => 30]);
-        $model->writeAuthLogError(5, ['date' => 40]);
+        $model->logAuth(['date' => 10]);
+        $model->logAuthError(5, ['date' => 20]);
+        $model->logAuthError(5, ['date' => 30]);
+        $model->logAuthError(5, ['date' => 40]);
 
         $this->assertTrue($model->hasFailedLoginSequence(2));
         $this->assertTrue($model->hasFailedLoginSequence(3));
@@ -186,7 +186,7 @@ class AuthLogIdentityBehaviorTest extends TestCase
     }
 
     /**
-     * @depends testWriteAuthLog
+     * @depends testLogAuth
      */
     public function testGc()
     {
@@ -206,14 +206,14 @@ class AuthLogIdentityBehaviorTest extends TestCase
         $model2->save(false);
         $model1->gcProbability = 0;
 
-        $model1->writeAuthLog(['date' => 10]);
-        $model2->writeAuthLog(['date' => 15]);
-        $model1->writeAuthLog(['date' => 20]);
-        $model2->writeAuthLog(['date' => 25]);
-        $model1->writeAuthLog(['date' => 30]);
-        $model2->writeAuthLog(['date' => 35]);
-        $model1->writeAuthLog(['date' => 40]);
-        $model2->writeAuthLog(['date' => 45]);
+        $model1->logAuth(['date' => 10]);
+        $model2->logAuth(['date' => 15]);
+        $model1->logAuth(['date' => 20]);
+        $model2->logAuth(['date' => 25]);
+        $model1->logAuth(['date' => 30]);
+        $model2->logAuth(['date' => 35]);
+        $model1->logAuth(['date' => 40]);
+        $model2->logAuth(['date' => 45]);
 
         $model1->gcLimit = 2;
         $model1->gcAuthLogs(true);

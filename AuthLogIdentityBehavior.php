@@ -74,7 +74,7 @@ class AuthLogIdentityBehavior extends Behavior
      * @param array $data data to be logged.
      * @return boolean success.
      */
-    public function writeAuthLog(array $data = [])
+    public function logAuth(array $data = [])
     {
         $authLogModel = $this->newAuthLogModel();
         $data = array_merge(
@@ -96,10 +96,10 @@ class AuthLogIdentityBehavior extends Behavior
      * @param array $data extra data to be logged.
      * @return boolean success.
      */
-    public function writeAuthLogError($error, array $data = [])
+    public function logAuthError($error, array $data = [])
     {
         $data[$this->errorAttribute] = $error;
-        return $this->writeAuthLog($data);
+        return $this->logAuth($data);
     }
 
     /**
