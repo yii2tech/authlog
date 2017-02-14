@@ -43,10 +43,10 @@ use yii\db\BaseActiveRecord;
  *                 'authLogRelation' => 'authLogs',
  *                 'defaultAuthLogData' => function ($model) {
  *                     return [
- *                         'ip' => $_SERVER['REMOTE_ADDR'],
- *                         'host' => @gethostbyaddr($_SERVER['REMOTE_ADDR']),
- *                         'url' => $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
- *                         'userAgent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null,
+ *                          'ip' => Yii::$app->request->getUserIP(),
+ *                          'host' => @gethostbyaddr(Yii::$app->request->getUserIP()),
+ *                          'url' => Yii::$app->request->getAbsoluteUrl(),
+ *                          'userAgent' => Yii::$app->request->getUserAgent()
  *                     ];
  *                 },
  *             ],
