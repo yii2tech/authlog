@@ -60,6 +60,7 @@ The logging mechanism is provided via [[\yii2tech\authlog\AuthLogIdentityBehavio
 attached to the identity class. For example:
 
 ```php
+use Yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii2tech\authlog\AuthLogIdentityBehavior;
