@@ -45,7 +45,7 @@ use yii\db\BaseActiveRecord;
  *                     return [
  *                          'ip' => Yii::$app->request->getUserIP(),
  *                          'host' => @gethostbyaddr(Yii::$app->request->getUserIP()),
- *                          'url' => Url::current(),
+ *                          'url' => Yii::$app->request->getAbsoluteUrl(),
  *                          'userAgent' => Yii::$app->request->getUserAgent()
  *                     ];
  *                 },
