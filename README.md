@@ -60,6 +60,7 @@ The logging mechanism is provided via [[\yii2tech\authlog\AuthLogIdentityBehavio
 attached to the identity class. For example:
 
 ```php
+use Yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii2tech\authlog\AuthLogIdentityBehavior;
@@ -74,10 +75,10 @@ class User extends ActiveRecord implements IdentityInterface
                 'authLogRelation' => 'authLogs',
                 'defaultAuthLogData' => function ($model) {
                     return [
-                        'ip' => $_SERVER['REMOTE_ADDR'],
-                        'host' => @gethostbyaddr($_SERVER['REMOTE_ADDR']),
-                        'url' => $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
-                        'userAgent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null,
+                        'ip' => Yii::$app->request->getUserIP(),
+                        'host' => @gethostbyaddr(Yii::$app->request->getUserIP()),
+                        'url' => Yii::$app->request->getAbsoluteUrl(),
+                        'userAgent' => Yii::$app->request->getUserAgent(),
                     ];
                 },
             ],
@@ -183,7 +184,7 @@ class LoginForm extends Model
 ```
 
 [[\yii2tech\authlog\AuthLogLoginFormBehavior]] automatically logs failure authentication attempt on owner
-validation in case identity is found and there is any error on [[\yii2tech\authlog\AuthLogLoginFormBehavior::verifyIdentityAttributes]].
+validation in case identity is found and there is any error on [[\yii2tech\authlog\AuthLogLoginFormBehavior::$verifyIdentityAttributes]].
 
 
 ## "Brute force" protection <span id="brute-force-protection"></span>
@@ -191,8 +192,8 @@ validation in case identity is found and there is any error on [[\yii2tech\authl
 In addition to simple logging [[\yii2tech\authlog\AuthLogLoginFormBehavior]] provide built-in "brute force" attack
 protection mechanism, which have 2 levels:
 
- - require robot verification (CAPTCHA) after [[\yii2tech\authlog\AuthLogLoginFormBehavior::verifyRobotFailedLoginSequence]] sequence login failures
- - deactivation of the identity record after [[\yii2tech\authlog\AuthLogLoginFormBehavior::deactivateFailedLoginSequence]] sequence login failures
+ - require robot verification (CAPTCHA) after [[\yii2tech\authlog\AuthLogLoginFormBehavior::$verifyRobotFailedLoginSequence]] sequence login failures
+ - deactivation of the identity record after [[\yii2tech\authlog\AuthLogLoginFormBehavior::$deactivateFailedLoginSequence]] sequence login failures
 
 For example:
 
@@ -215,7 +216,7 @@ class LoginForm extends Model
                 'findIdentity' => 'findIdentity',
                 'verifyRobotAttribute' => 'verifyCode',
                 'deactivateIdentity' => function ($identity) {
-                    return $this->updateAttributes(['statusId' => User::STATUS_SUSPENDED]);;
+                    return $this->updateAttributes(['statusId' => User::STATUS_SUSPENDED]);
                 },
             ],
         ];
@@ -259,14 +260,14 @@ Robot verification requires extra processing at the view layer, which should ren
 <?php endif; ?>
 
 <div class="form-group">
-    <?= Html::submitButton(Yii::t('admin', 'Do Login'), ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+    <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
 </div>
 
 <?php ActiveForm::end(); ?>
 ```
 
 **Heads up!** Although [[\yii2tech\authlog\AuthLogLoginFormBehavior]] is supposed to cover most common web login
-form workflow, do not limit yourself with it. Be ready to create your own implementation of feature.
+form workflow, do not limit yourself with it. Be ready to create your own implementation of the feature.
 
 
 ## Garbage Collection <span id="garbage-collection"></span>

@@ -33,6 +33,11 @@ use yii\db\BaseActiveRecord;
  * Configuration example:
  *
  * ```php
+ * use Yii;
+ * use yii\db\ActiveRecord;
+ * use yii\web\IdentityInterface;
+ * use yii2tech\authlog\AuthLogIdentityBehavior;
+ *
  * class User extends ActiveRecord implements IdentityInterface
  * {
  *     public function behaviors()
@@ -43,10 +48,10 @@ use yii\db\BaseActiveRecord;
  *                 'authLogRelation' => 'authLogs',
  *                 'defaultAuthLogData' => function ($model) {
  *                     return [
- *                         'ip' => $_SERVER['REMOTE_ADDR'],
- *                         'host' => @gethostbyaddr($_SERVER['REMOTE_ADDR']),
- *                         'url' => $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
- *                         'userAgent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null,
+ *                         'ip' => Yii::$app->request->getUserIP(),
+ *                         'host' => @gethostbyaddr(Yii::$app->request->getUserIP()),
+ *                         'url' => Yii::$app->request->getAbsoluteUrl(),
+ *                         'userAgent' => Yii::$app->request->getUserAgent(),
  *                     ];
  *                 },
  *             ],
@@ -93,13 +98,13 @@ class AuthLogIdentityBehavior extends Behavior
      */
     public $defaultAuthLogData;
     /**
-     * @var integer the probability (parts per million) that garbage collection (GC) should be performed
+     * @var int the probability (parts per million) that garbage collection (GC) should be performed
      * when writing auth log. Defaults to 10000, meaning 1% chance.
      * This number should be between 0 and 1000000. A value 0 means no GC will be performed at all.
      */
     public $gcProbability = 10000;
     /**
-     * @var integer number of the last auth logs, which should be kept after garbage collection (GC) performed.
+     * @var int number of the last auth logs, which should be kept after garbage collection (GC) performed.
      */
     public $gcLimit = 100;
 
@@ -116,7 +121,7 @@ class AuthLogIdentityBehavior extends Behavior
     /**
      * Writes data into the log.
      * @param array $data data to be logged.
-     * @return boolean success.
+     * @return bool success.
      */
     public function logAuth(array $data = [])
     {
@@ -138,7 +143,7 @@ class AuthLogIdentityBehavior extends Behavior
      * Writes error info into the log.
      * @param mixed $error error token
      * @param array $data extra data to be logged.
-     * @return boolean success.
+     * @return bool success.
      */
     public function logAuthError($error, array $data = [])
     {
@@ -206,7 +211,7 @@ class AuthLogIdentityBehavior extends Behavior
 
     /**
      * Finds successful auth log record.
-     * @param integer $offset offset to be applied
+     * @param int $offset offset to be applied
      * @return BaseActiveRecord|null model instance.
      */
     protected function findLastSuccessfulAuthLog($offset)
@@ -220,7 +225,7 @@ class AuthLogIdentityBehavior extends Behavior
     }
 
     /**
-     * @param boolean $refresh whether to refresh internal cache.
+     * @param bool $refresh whether to refresh internal cache.
      * @return BaseActiveRecord|null auth log model.
      */
     public function getLastSuccessfulAuthLog($refresh = false)
@@ -232,7 +237,7 @@ class AuthLogIdentityBehavior extends Behavior
     }
 
     /**
-     * @param boolean $refresh whether to refresh internal cache.
+     * @param bool $refresh whether to refresh internal cache.
      * @return BaseActiveRecord|null auth log model.
      */
     public function getPreLastSuccessfulAuthLog($refresh = false)
@@ -244,7 +249,7 @@ class AuthLogIdentityBehavior extends Behavior
     }
 
     /**
-     * @param boolean $refresh whether to refresh internal cache.
+     * @param bool $refresh whether to refresh internal cache.
      * @return mixed|null last successful login date.
      */
     public function getLastLoginDate($refresh = false)
@@ -256,7 +261,7 @@ class AuthLogIdentityBehavior extends Behavior
     }
 
     /**
-     * @param boolean $refresh whether to refresh internal cache.
+     * @param bool $refresh whether to refresh internal cache.
      * @return mixed|null pre-last successful login date.
      */
     public function getPreLastLoginDate($refresh = false)
@@ -269,8 +274,8 @@ class AuthLogIdentityBehavior extends Behavior
 
     /**
      * Check if last auth logs compose a sequence of failed login attempt with given length.
-     * @param integer $length sequence length.
-     * @return boolean whether there is requested failure sequence or not.
+     * @param int $length sequence length.
+     * @return bool whether there is requested failure sequence or not.
      */
     public function hasFailedLoginSequence($length)
     {
@@ -296,7 +301,7 @@ class AuthLogIdentityBehavior extends Behavior
 
     /**
      * Removes auth logs, which overflow [[gcLimit]].
-     * @param boolean $force whether to enforce the garbage collection regardless of [[gcProbability]].
+     * @param bool $force whether to enforce the garbage collection regardless of [[gcProbability]].
      * Defaults to false, meaning the actual deletion happens with the probability as specified by [[gcProbability]].
      */
     public function gcAuthLogs($force = false)

@@ -5,10 +5,10 @@ namespace yii2tech\tests\unit\authlog\data;
 use yii\db\ActiveRecord;
 
 /**
- * @property integer $id
- * @property integer $userId
- * @property integer $date
- * @property integer $error
+ * @property int $id
+ * @property int $userId
+ * @property int $date
+ * @property int $error
  * @property string $ip
  * @property string $host
  * @property string $url

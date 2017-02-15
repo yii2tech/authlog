@@ -48,7 +48,7 @@ use yii\web\IdentityInterface;
  *
  * @property Model $owner
  * @property IdentityInterface|AuthLogIdentityBehavior|null $identity related identity model.
- * @property boolean $isVerifyRobotRequired whether the robot verification required or not.
+ * @property bool $isVerifyRobotRequired whether the robot verification required or not.
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
@@ -106,22 +106,22 @@ class AuthLogLoginFormBehavior extends Behavior
      */
     public $verifyRobotRule = ['captcha'];
     /**
-     * @var integer|boolean length of failed login attempts sequence, which should trigger robot verification.
+     * @var int|false length of failed login attempts sequence, which should trigger robot verification.
      * If set to `false` - no robot check will be ever performed.
      */
     public $verifyRobotFailedLoginSequence = 3;
     /**
-     * @var integer|boolean length of failed login attempts sequence, which should trigger identity deactivation.
+     * @var int|false length of failed login attempts sequence, which should trigger identity deactivation.
      * If set to `false` - no identity deactivation will be ever performed.
      */
     public $deactivateFailedLoginSequence = 10;
 
     /**
-     * @var IdentityInterface|AuthLogIdentityBehavior|null|boolean
+     * @var IdentityInterface|AuthLogIdentityBehavior|null|bool identity.
      */
     private $_identity = false;
     /**
-     * @var boolean
+     * @var bool whether the robot verification required or not.
      */
     private $_isVerifyRobotRequired;
 
@@ -169,7 +169,7 @@ class AuthLogLoginFormBehavior extends Behavior
     }
 
     /**
-     * @return boolean
+     * @return bool whether the robot verification required or not.
      */
     public function getIsVerifyRobotRequired()
     {
@@ -180,7 +180,7 @@ class AuthLogLoginFormBehavior extends Behavior
     }
 
     /**
-     * @param boolean $isRobotCheckRequired
+     * @param bool $isRobotCheckRequired whether the robot verification required or not.
      */
     public function setIsVerifyRobotRequired($isRobotCheckRequired)
     {
@@ -188,7 +188,7 @@ class AuthLogLoginFormBehavior extends Behavior
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     protected function findIsRobotCheckRequired()
     {
@@ -234,7 +234,7 @@ class AuthLogLoginFormBehavior extends Behavior
 
     /**
      * Deactivates current identity.
-     * @return boolean|mixed deactivation result.
+     * @return bool|mixed deactivation result.
      */
     public function deactivateIdentity()
     {
@@ -247,9 +247,8 @@ class AuthLogLoginFormBehavior extends Behavior
             return false;
         } elseif (is_string($this->deactivateIdentity)) {
             return call_user_func([$identity, $this->deactivateIdentity]);
-        } else {
-            return call_user_func($this->deactivateIdentity, $identity);
         }
+        return call_user_func($this->deactivateIdentity, $identity);
     }
 
     // Events :

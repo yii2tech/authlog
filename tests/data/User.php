@@ -8,7 +8,7 @@ use yii\web\IdentityInterface;
 use yii2tech\authlog\AuthLogIdentityBehavior;
 
 /**
- * @property integer $id
+ * @property int $id
  * @property string $username
  * @property string $password
  * @property string $authKey
