@@ -12,6 +12,6 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 require_once(__DIR__ . '/../vendor/yiisoft/yii2/Yii.php');
 
 Yii::setAlias('@yii2tech/tests/unit/authlog', __DIR__);
-Yii::setAlias('@yii2tech/authlog', dirname(__DIR__));
+Yii::setAlias('@yii2tech/authlog', dirname(__DIR__) . '/src');
 
 require_once(__DIR__ . '/compatibility.php');
