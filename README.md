@@ -76,7 +76,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             'authLog' => [
-                'class' => AuthLogIdentityBehavior::className(),
+                '__class' => AuthLogIdentityBehavior::class,
                 'authLogRelation' => 'authLogs',
                 'defaultAuthLogData' => function ($model) {
                     return [
@@ -92,7 +92,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getAuthLogs()
     {
-        return $this->hasMany(UserAuthLog::className(), ['userId' => 'id']);
+        return $this->hasMany(UserAuthLog::class, ['userId' => 'id']);
     }
 
     // ...
@@ -131,10 +131,10 @@ of [[\yii\web\User]]). This could be done at the application configuration:
 return [
     'components' => [
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => app\models\User::class,
             'loginUrl' => ['site/login'],
             'as authLog' => [
-                'class' => 'yii2tech\authlog\AuthLogWebUserBehavior'
+                '__class' => yii2tech\authlog\AuthLogWebUserBehavior::class
             ],
         ],
         // ...
@@ -173,7 +173,7 @@ class LoginForm extends Model
     {
         return [
             'authLog' => [
-                'class' => AuthLogLoginFormBehavior::className(),
+                '__class' => AuthLogLoginFormBehavior::class,
                 'findIdentity' => 'findIdentity',
             ],
         ];
@@ -217,7 +217,7 @@ class LoginForm extends Model
     {
         return [
             'authLog' => [
-                'class' => AuthLogLoginFormBehavior::className(),
+                '__class' => AuthLogLoginFormBehavior::class,
                 'findIdentity' => 'findIdentity',
                 'verifyRobotAttribute' => 'verifyCode',
                 'deactivateIdentity' => function ($identity) {
@@ -259,7 +259,7 @@ Robot verification requires extra processing at the view layer, which should ren
 <?php endif; ?>
 
 <?php if ($model->isVerifyRobotRequired) : ?>
-    <?= $form->field($model, 'verifyCode')->widget(Captcha::className(), [
+    <?= $form->field($model, 'verifyCode')->widget(Captcha::class, [
         'template' => '{image}{input}',
     ]) ?>
 <?php endif; ?>

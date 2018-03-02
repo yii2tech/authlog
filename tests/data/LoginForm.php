@@ -17,8 +17,8 @@ class LoginForm extends Model
     public function behaviors()
     {
         return [
-            'authLog' => [
-                'class' => AuthLogLoginFormBehavior::className(),
+            'auth-log' => [
+                '__class' => AuthLogLoginFormBehavior::class,
                 'verifyRobotAttribute' => 'verifyCode',
                 'verifyRobotRule' => ['required'],
                 'verifyRobotFailedLoginSequence' => 2,

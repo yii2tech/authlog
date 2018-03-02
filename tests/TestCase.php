@@ -36,7 +36,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
      * @param array $config The application configuration, if needed
      * @param string $appClass name of the application class to create
      */
-    protected function mockApplication($config = [], $appClass = '\yii\console\Application')
+    protected function mockApplication($config = [], $appClass = \yii\console\Application::class)
     {
         new $appClass(ArrayHelper::merge([
             'id' => 'testapp',
@@ -44,14 +44,14 @@ class TestCase extends \PHPUnit\Framework\TestCase
             'vendorPath' => $this->getVendorPath(),
             'components' => [
                 'request' => [
-                    'class' => __NAMESPACE__ . '\data\Request'
+                    '__class' => data\Request::class
                 ],
                 'user' => [
-                    'class' => 'yii\web\User',
-                    'identityClass' => __NAMESPACE__ . '\data\User',
+                    '__class' => \yii\web\User::class,
+                    'identityClass' => data\User::class,
                 ],
                 'db' => [
-                    'class' => 'yii\db\Connection',
+                    '__class' => \yii\db\Connection::class,
                     'dsn' => 'sqlite::memory:',
                 ],
             ],

@@ -14,7 +14,7 @@ class AuthLogWebUserBehaviorTest extends TestCase
     {
         $webUser = new \yii\web\User([
             'enableSession' => false,
-            'identityClass' => User::className(),
+            'identityClass' => User::class,
         ]);
         $webUser->attachBehavior('authLog', new AuthLogWebUserBehavior());
         return $webUser;

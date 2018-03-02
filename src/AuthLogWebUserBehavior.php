@@ -21,7 +21,7 @@ use yii\web\User;
  *     'components' => [
  *         'user' => [
  *             'as authLog' => [
- *                 'class' => 'yii2tech\authlog\AuthLogWebUserBehavior'
+ *                 '__class' => yii2tech\authlog\AuthLogWebUserBehavior::class
  *             ],
  *         ],
  *         // ...

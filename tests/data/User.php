@@ -23,8 +23,8 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors()
     {
         return [
-            'authlog' => [
-                'class' => AuthLogIdentityBehavior::className(),
+            'auth-log' => [
+                '__class' => AuthLogIdentityBehavior::class,
             ],
         ];
     }
@@ -53,7 +53,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getAuthLogs()
     {
-        return $this->hasMany(AuthLog::className(), ['userId' => 'id']);
+        return $this->hasMany(AuthLog::class, ['userId' => 'id']);
     }
 
     /**

@@ -43,8 +43,8 @@ use yii\db\BaseActiveRecord;
  *     public function behaviors()
  *     {
  *         return [
- *             'authLog' => [
- *                 'class' => AuthLogIdentityBehavior::className(),
+ *             'auth-log' => [
+ *                 '__class' => AuthLogIdentityBehavior::class,
  *                 'authLogRelation' => 'authLogs',
  *                 'defaultAuthLogData' => function ($model) {
  *                     return [
@@ -201,7 +201,7 @@ class AuthLogIdentityBehavior extends Behavior
     {
         $relation = $this->getAuthLogRelation();
         $modelClass = $relation->modelClass;
-        list($ownerReferenceAttribute) = array_keys($relation->link);
+        [$ownerReferenceAttribute] = array_keys($relation->link);
         $model = new $modelClass();
         $model->{$ownerReferenceAttribute} = $this->owner->getPrimaryKey();
         return $model;
@@ -319,7 +319,7 @@ class AuthLogIdentityBehavior extends Behavior
 
             /* @var $modelClass BaseActiveRecord */
             $modelClass = $relation->modelClass;
-            list($ownerReferenceAttribute) = array_keys($relation->link);
+            [$ownerReferenceAttribute] = array_keys($relation->link);
 
             $modelClass::deleteAll([
                 'and',

@@ -37,7 +37,7 @@ use yii\web\IdentityInterface;
  *     {
  *         return [
  *             'authLog' => [
- *                 'class' => AuthLogLoginFormBehavior::className(),
+ *                 '__class' => AuthLogLoginFormBehavior::class,
  *                 'deactivateIdentity' => 'suspend'
  *             ],
  *         ];
@@ -104,7 +104,7 @@ class AuthLogLoginFormBehavior extends Behavior
      * @var array validation rule, which should be used for robot verification.
      * Note: in addition to this, owner model should provide a validation rule, which makes [[verifyRobotAttribute]] 'safe'!
      */
-    public $verifyRobotRule = ['captcha'];
+    public $verifyRobotRule = [\yii\captcha\CaptchaValidator::class];
     /**
      * @var int|false length of failed login attempts sequence, which should trigger robot verification.
      * If set to `false` - no robot check will be ever performed.
