@@ -254,7 +254,7 @@ class AuthLogLoginFormBehavior extends Behavior
     // Events :
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function events()
     {

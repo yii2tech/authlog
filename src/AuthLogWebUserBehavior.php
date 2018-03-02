@@ -39,7 +39,7 @@ use yii\web\User;
 class AuthLogWebUserBehavior extends Behavior
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function events()
     {

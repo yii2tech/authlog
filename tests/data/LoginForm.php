@@ -12,7 +12,7 @@ class LoginForm extends Model
     public $verifyCode;
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function behaviors()
     {
@@ -28,7 +28,7 @@ class LoginForm extends Model
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rules()
     {

@@ -10,6 +10,9 @@ use Yii;
  */
 class TestCase extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function setUp()
     {
         parent::setUp();
@@ -18,6 +21,9 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $this->setupTestDbData();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function tearDown()
     {
         parent::tearDown();
