@@ -8,6 +8,12 @@ namespace yii2tech\tests\unit\authlog\data;
 class Request extends \yii\console\Request
 {
     /**
+     * @var bool
+     * @see \yii\web\Request::$enableCsrfCookie
+     */
+    public $enableCsrfCookie = false;
+
+    /**
      * Returns the user IP address.
      * @return string user IP address. Null is returned if the user IP address cannot be detected.
      */
